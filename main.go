@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"simple-api.com/m/src/config"
 	"simple-api.com/m/src/pkg/logger"
+	"simple-api.com/m/src/pkg/wrapper"
 )
 
 func main() {
@@ -49,10 +50,7 @@ func main() {
 	}()
 
 	server.GET("/", func(c *gin.Context) {
-		log.Info(c, "info", nil)
-		c.JSON(200, gin.H{
-			"message": "Server up and running",
-		})
+		wrapper.SendSuccessResponse(c, "Server Up and Running", nil, http.StatusOK)
 	})
 
 	if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
