@@ -69,3 +69,7 @@ func (mysql *Mysql) Close() error {
 	}
 	return sqlDB.Close()
 }
+
+func (mysqlDb *Mysql) GetDatabase() (*gorm.DB) {
+	return mysqlDb.db
+}
