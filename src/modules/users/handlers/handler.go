@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"simple-api.com/m/src/modules/users"
 	usermodel "simple-api.com/m/src/modules/users/model"
+	"simple-api.com/m/src/pkg/helper"
 	"simple-api.com/m/src/pkg/logger"
 	"simple-api.com/m/src/pkg/wrapper"
 )
@@ -46,16 +47,18 @@ func (uh *UserHandler) UpdateUser(c *gin.Context) {
 }
 
 func (uh *UserHandler) GetUserDetail(c *gin.Context) {
-	var request usermodel.UserLoginRequest
+	var request usermodel.UserDetailRequest
 	ctx := c.Request.Context()
-
-	if err := c.ShouldBindJSON(&request); err != nil {
-		uh.log.Error(ctx, "Error while binding the request", err, nil)
-		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+	user, ok := ctx.Value("user").(*helper.AccessClaims)
+	if !ok {
+		errMsg := wrapper.InternalServerError("Error while converting request")
+		wrapper.SendErrorResponse(c, errMsg, nil, http.StatusInternalServerError)
 		return
 	}
 
-	result, err := uh.us.Login(ctx, request)
+	request.Username = user.Claims.Username
+
+	result, err := uh.us.GetUserDetail(ctx, request)
 	if err != nil {
 		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
 		return
