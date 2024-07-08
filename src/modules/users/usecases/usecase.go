@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"simple-api.com/m/src/modules/users"
+	userentity "simple-api.com/m/src/modules/users/entities"
 	usermodel "simple-api.com/m/src/modules/users/model"
 	"simple-api.com/m/src/pkg/helper"
 	"simple-api.com/m/src/pkg/logger"
@@ -95,4 +96,25 @@ func (u UserUsecase) UpdateUser(ctx context.Context, payload usermodel.UserUpdat
 	res.UpdatedAt = user.UpdatedAt
 
 	return res, nil
+}
+
+func (u UserUsecase) RegisterUser(ctx context.Context, payload usermodel.UserRegisterRequest) (error) {
+	var user userentity.User
+
+	hashedPassword, err := helper.Hash(payload.PasswordHash)
+	if err != nil {
+		return wrapper.BadRequestError("Error while hashing password")
+	}
+
+	user.Username = payload.Username
+	user.Email = payload.Email
+	user.PasswordHash = hashedPassword
+	user.Status = "Status" // Change this to enum
+
+	err = u.ur.RegisterUser(ctx, user)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

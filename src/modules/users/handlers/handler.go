@@ -89,3 +89,22 @@ func (uh *UserHandler) GetUserDetail(c *gin.Context) {
 
 	wrapper.SendSuccessResponse(c, "Success", result, http.StatusOK)
 }
+
+func (uh *UserHandler) Register(c *gin.Context) {
+	var request usermodel.UserRegisterRequest
+	ctx := c.Request.Context()
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		uh.log.Error(ctx, "Error while binding the request", err, nil)
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	err := uh.us.RegisterUser(ctx, request)
+	if err != nil {
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	wrapper.SendSuccessResponse(c, "Success", nil, http.StatusCreated)
+}

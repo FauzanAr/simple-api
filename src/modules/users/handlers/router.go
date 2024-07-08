@@ -7,6 +7,7 @@ import (
 
 func (uh *UserHandler) UserRoutes(router *gin.RouterGroup) {
 	router.POST("/v1/login", uh.Login)
+	router.POST("/v1/register", uh.Register)
 
 	// Protected
 	protectedRoutes := router.Group("")

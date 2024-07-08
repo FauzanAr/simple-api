@@ -52,3 +52,18 @@ func (u UserRepository) UpdateUser(ctx context.Context, user userentity.User) (e
 
 	return nil
 }
+
+func (u UserRepository) RegisterUser(ctx context.Context, user userentity.User) (error) {
+	err := u.db.GetDatabase().Create(&user).Error
+	if err != nil {
+		u.log.Error(ctx, err.Error(), err, nil)
+
+		if strings.Contains(err.Error(), "Duplicate entry") {
+			return wrapper.BadRequestError("Duplicate entry for email or username")
+		}
+
+		return wrapper.InternalServerError("Error while saving data!")
+	}
+
+	return nil
+}

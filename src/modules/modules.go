@@ -39,7 +39,7 @@ func (m *Modules) InitUsers() error {
 	usecase := userusecase.NewUserUsecase(m.log, repository)
 	handlers := userhandler.NewUserHandlers(m.log, usecase)
 
-	group := m.router.Group("/api/users")
+	group := m.router.Group("/api")
 	handlers.UserRoutes(group)
 	return nil
 }
