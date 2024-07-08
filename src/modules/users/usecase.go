@@ -11,4 +11,5 @@ type Usecase interface {
 	GetUserDetail(context.Context, usermodel.UserDetailRequest) (usermodel.UserDetailResponse, error)
 	UpdateUser(context.Context, usermodel.UserUpdateRequest) (usermodel.UserUpdateResponse, error)
 	RegisterUser(context.Context, usermodel.UserRegisterRequest) (error)
+	GetAllUserDetail(context.Context) (usermodel.UserAllDetailResponse, error)
 }

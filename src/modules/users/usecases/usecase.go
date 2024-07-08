@@ -118,3 +118,15 @@ func (u UserUsecase) RegisterUser(ctx context.Context, payload usermodel.UserReg
 
 	return nil
 }
+
+func (u UserUsecase) GetAllUserDetail(ctx context.Context) (usermodel.UserAllDetailResponse, error) {
+	var res usermodel.UserAllDetailResponse
+	users, err := u.ur.GetAllUsers(ctx)
+	if err != nil {
+		return res, err
+	}
+
+	res.Users = users
+
+	return res, nil
+}

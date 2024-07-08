@@ -16,4 +16,10 @@ func (uh *UserHandler) UserRoutes(router *gin.RouterGroup) {
 
 	protectedRoutes.GET("/v1/profile", uh.GetUserDetail)
 	protectedRoutes.PUT("/v1/profile", uh.UpdateUser)
+
+	// Admin
+	adminRoutes := router.Group("")
+
+	adminRoutes.Use(middleware.GinAuthAdminMiddleware(uh.log))
+	adminRoutes.GET("/v1/users/", uh.GetAllUser)
 }

@@ -108,3 +108,14 @@ func (uh *UserHandler) Register(c *gin.Context) {
 
 	wrapper.SendSuccessResponse(c, "Success", nil, http.StatusCreated)
 }
+
+func (uh *UserHandler) GetAllUser(c *gin.Context) {
+	ctx := c.Request.Context()
+	result, err := uh.us.GetAllUserDetail(ctx)
+	if err != nil {
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	wrapper.SendSuccessResponse(c, "Success", result, http.StatusOK)
+}

@@ -67,3 +67,18 @@ func (u UserRepository) RegisterUser(ctx context.Context, user userentity.User) 
 
 	return nil
 }
+
+func (u UserRepository) GetAllUsers(ctx context.Context) ([]userentity.UserAll, error) {
+	var result []userentity.UserAll
+	err := u.db.GetDatabase().Find(&result).Error
+	if err != nil {
+		u.log.Error(ctx, err.Error(), err, nil)
+		if err.Error() == "record not found" {
+			return result, wrapper.NotFoundError("User not found!")
+		}
+
+		return result, wrapper.InternalServerError("Error while read data!")
+	}
+
+	return result, nil
+}
