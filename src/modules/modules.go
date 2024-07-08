@@ -8,6 +8,9 @@ import (
 	adminhandler "simple-api.com/m/src/modules/admins/handlers"
 	adminrepository "simple-api.com/m/src/modules/admins/repositories"
 	adminusecase "simple-api.com/m/src/modules/admins/usecases"
+	namespacehandler "simple-api.com/m/src/modules/namespaces/handlers"
+	namespacerepository "simple-api.com/m/src/modules/namespaces/repositories"
+	namespaceusecase "simple-api.com/m/src/modules/namespaces/usecases"
 	userhandler "simple-api.com/m/src/modules/users/handlers"
 	userrepository "simple-api.com/m/src/modules/users/repositories"
 	userusecase "simple-api.com/m/src/modules/users/usecases"
@@ -35,6 +38,7 @@ func NewModules(ctx context.Context, router *gin.Engine, log logger.Logger, db *
 func (m *Modules) Init() error {
 	m.InitAdmins()
 	m.InitUsers()
+	m.InitNamespaces()
 	return nil
 }
 
@@ -55,5 +59,15 @@ func (m *Modules) InitAdmins() error {
 
 	group := m.router.Group("/api")
 	handlers.AdminRoutes(group)
+	return nil
+}
+
+func (m *Modules) InitNamespaces() error {
+	repository := namespacerepository.NewNamespaceRepository(m.log, m.db)
+	usecase := namespaceusecase.NewNamespaceUsecase(m.log, repository)
+	handlers := namespacehandler.NewNamespaceHandler(m.log, usecase)
+
+	group := m.router.Group("/api")
+	handlers.NamespaceRoutes(group)
 	return nil
 }
