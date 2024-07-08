@@ -17,4 +17,5 @@ func (nh *NamespaceHandler) NamespaceRoutes(router *gin.RouterGroup) {
 	
 	adminRoutes.GET("/v1/namespaces", nh.GetAllNamespaces)
 	adminRoutes.DELETE("/v1/namespaces/:id", nh.DeleteNamespace)
+	adminRoutes.GET("/v1/namespaces/:id/status", nh.GetNameSpaceStatus)
 }

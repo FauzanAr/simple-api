@@ -57,3 +57,16 @@ func (n NamespaceUsecase) GetAllNamespaces(ctx context.Context) (namespacemodel.
 
 	return res, nil
 }
+
+func (n NamespaceUsecase) GetStatusNamespace(ctx context.Context, payload namespacemodel.NamespaceGetStatusRequest) (namespacemodel.NamespaceGetStatusResponse, error) {
+	var res namespacemodel.NamespaceGetStatusResponse
+	namespace, err := n.nr.GetNamespaceById(ctx, payload.Id)
+	if err != nil {
+		return res, err
+	}
+
+	res.Id = namespace.NamespaceID
+	res.Status = namespace.Status
+
+	return res, nil
+}

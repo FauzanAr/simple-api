@@ -58,3 +58,18 @@ func (nr NamespaceRepository) GetAllNamespaces(ctx context.Context) ([]namespace
 
 	return result, nil
 }
+
+func (nr NamespaceRepository) GetNamespaceById(ctx context.Context, id int) (namespaceentity.Namespace, error) {
+	var result namespaceentity.Namespace
+	err := nr.db.GetDatabase().Where("NamespaceId = ?", id).First(&result).Error
+	if err != nil {
+		nr.log.Error(ctx, err.Error(), err, nil)
+		if err.Error() == "record not found" {
+			return result, wrapper.NotFoundError("Namespaces not found!")
+		}
+
+		return result, wrapper.InternalServerError("Error while read data!")
+	}
+
+	return result, nil
+}

@@ -83,3 +83,24 @@ func (nh *NamespaceHandler) GetAllNamespaces(c *gin.Context) {
 
 	wrapper.SendSuccessResponse(c, "Success", res, http.StatusOK)
 }
+
+func (nh *NamespaceHandler) GetNameSpaceStatus(c *gin.Context) {
+	var req namespacemodel.NamespaceGetStatusRequest
+	ctx := c.Request.Context()
+
+	namespaceId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		wrapper.SendErrorResponse(c, wrapper.BadRequestError("Invalid namespaceId"), nil, http.StatusBadRequest)
+		return
+	}
+
+	req.Id = namespaceId
+
+	res, err := nh.nu.GetStatusNamespace(ctx, req)
+	if err != nil {
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	wrapper.SendSuccessResponse(c, "Success", res, http.StatusOK)
+}
