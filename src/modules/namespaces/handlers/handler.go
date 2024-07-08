@@ -2,6 +2,7 @@ package namespacehandler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"simple-api.com/m/src/modules/namespaces"
@@ -42,6 +43,27 @@ func (nh *NamespaceHandler) CreateNamespace(c *gin.Context) {
 	}
 
 	err := nh.nu.CreateNamespace(ctx, request)
+	if err != nil {
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	wrapper.SendSuccessResponse(c, "Success", nil, http.StatusOK)
+}
+
+func (nh *NamespaceHandler) DeleteNamespace(c *gin.Context) {
+	var req namespacemodel.NamespaceDeleteRequest
+	ctx := c.Request.Context()
+
+	namespaceId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		wrapper.SendErrorResponse(c, wrapper.BadRequestError("Invalid namespaceId"), nil, http.StatusBadRequest)
+		return
+	}
+
+	req.Id = namespaceId
+
+	err = nh.nu.DeleteNamespace(ctx, req)
 	if err != nil {
 		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
 		return

@@ -13,4 +13,6 @@ func (nh *NamespaceHandler) NamespaceRoutes(router *gin.RouterGroup) {
 	adminRoutes.Use(middleware.GinAuthAdminMiddleware(nh.log))
 
 	userRoutes.POST("/v1/namespaces", nh.CreateNamespace)
+
+	adminRoutes.DELETE("/v1/namespaces/:id", nh.DeleteNamespace)
 }

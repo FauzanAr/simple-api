@@ -32,3 +32,14 @@ func (nr NamespaceRepository) CreateNamespace(ctx context.Context, namespace nam
 
 	return nil
 }
+
+func (nr NamespaceRepository) DeleteNamespace(ctx context.Context, id int) (error) {
+	err := nr.db.GetDatabase().Delete(&namespaceentity.Namespace{}, id).Error
+	if err != nil {
+		nr.log.Error(ctx, err.Error(), err, nil)
+
+		return wrapper.InternalServerError("Error while delete data!")
+	}
+
+	return nil
+}

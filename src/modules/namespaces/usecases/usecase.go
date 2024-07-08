@@ -21,7 +21,7 @@ func NewNamespaceUsecase(log logger.Logger, nr namespaces.Repository) namespaces
 	}
 }
 
-func (n NamespaceUsecase) CreateNamespace(ctx context.Context, payload namespacemodel.NamespaceCreateRequest) (error) {
+func (n NamespaceUsecase) CreateNamespace(ctx context.Context, payload namespacemodel.NamespaceCreateRequest) error {
 	var namespace namespaceentity.Namespace
 
 	namespace.UserID = payload.UserID
@@ -29,6 +29,15 @@ func (n NamespaceUsecase) CreateNamespace(ctx context.Context, payload namespace
 	namespace.Status = payload.Status
 
 	err := n.nr.CreateNamespace(ctx, namespace)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (n NamespaceUsecase) DeleteNamespace(ctx context.Context, payload namespacemodel.NamespaceDeleteRequest) error {
+	err := n.nr.DeleteNamespace(ctx, payload.Id)
 	if err != nil {
 		return err
 	}
