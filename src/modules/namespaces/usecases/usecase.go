@@ -44,3 +44,16 @@ func (n NamespaceUsecase) DeleteNamespace(ctx context.Context, payload namespace
 
 	return nil
 }
+
+func (n NamespaceUsecase) GetAllNamespaces(ctx context.Context) (namespacemodel.NamespaceGetAllResponse, error) {
+	var res namespacemodel.NamespaceGetAllResponse
+
+	namespaces, err := n.nr.GetAllNamespaces(ctx)
+	if err != nil {
+		return res, err
+	}
+
+	res.Namespaces = namespaces
+
+	return res, nil
+}

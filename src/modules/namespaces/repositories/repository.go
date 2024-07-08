@@ -43,3 +43,18 @@ func (nr NamespaceRepository) DeleteNamespace(ctx context.Context, id int) (erro
 
 	return nil
 }
+
+func (nr NamespaceRepository) GetAllNamespaces(ctx context.Context) ([]namespaceentity.Namespace, error) {
+	var result []namespaceentity.Namespace
+	err := nr.db.GetDatabase().Find(&result).Error
+	if err != nil {
+		nr.log.Error(ctx, err.Error(), err, nil)
+		if err.Error() == "record not found" {
+			return result, wrapper.NotFoundError("Namespaces not found!")
+		}
+
+		return result, wrapper.InternalServerError("Error while read data!")
+	}
+
+	return result, nil
+}

@@ -71,3 +71,15 @@ func (nh *NamespaceHandler) DeleteNamespace(c *gin.Context) {
 
 	wrapper.SendSuccessResponse(c, "Success", nil, http.StatusOK)
 }
+
+func (nh *NamespaceHandler) GetAllNamespaces(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	res, err := nh.nu.GetAllNamespaces(ctx)
+	if err != nil {
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	wrapper.SendSuccessResponse(c, "Success", res, http.StatusOK)
+}

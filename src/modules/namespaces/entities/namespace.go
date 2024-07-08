@@ -1,6 +1,8 @@
 package namespaceentity
 
-import "time"
+import (
+	"time"
+)
 
 type Namespace struct {
 	NamespaceID int       `gorm:"column:NamespaceID"`

@@ -9,4 +9,5 @@ import (
 type Repository interface {
 	CreateNamespace(context.Context, namespaceentity.Namespace) (error)
 	DeleteNamespace(context.Context, int) (error)
+	GetAllNamespaces(context.Context) ([]namespaceentity.Namespace, error)
 }
