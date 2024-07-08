@@ -10,7 +10,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"simple-api.com/m/src/config"
+	"simple-api.com/m/src/modules"
 	"simple-api.com/m/src/pkg/logger"
+	"simple-api.com/m/src/pkg/middleware"
 	"simple-api.com/m/src/pkg/wrapper"
 )
 
@@ -25,6 +27,9 @@ func main() {
 	gin.SetMode(conf.AppEnviroment)
 
 	server := gin.New()
+	server.Use(gin.Recovery())
+	server.Use(middleware.GinRequestTrace(log))
+
 
 	httpServer := &http.Server{
 		Addr:    ":" + conf.AppPort,
@@ -52,6 +57,8 @@ func main() {
 	server.GET("/", func(c *gin.Context) {
 		wrapper.SendSuccessResponse(c, "Server Up and Running", nil, http.StatusOK)
 	})
+
+	modules.NewModules(ctx, server, log).Init()
 
 	if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Error(ctx, "Unable to start server", err, nil)

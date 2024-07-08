@@ -54,10 +54,18 @@ func (l *logger) getFields(ctx context.Context, metaData MetaData) []zap.Field {
         metaData = make(MetaData)
     }
 
-	metaData["trace_id"] = ctx.Value("trace_id")
-	metaData["url"] = ctx.Value("url")
-	metaData["method"] = ctx.Value("method")
-	metaData["remote_ip"] = ctx.Value("remote_ip")
+	if traceID, ok := ctx.Value("trace_id").(string); ok {
+		zapFields = append(zapFields, zap.String("trace_id", traceID))
+	}
+	if url, ok := ctx.Value("url").(string); ok {
+		zapFields = append(zapFields, zap.String("url", url))
+	}
+	if method, ok := ctx.Value("method").(string); ok {
+		zapFields = append(zapFields, zap.String("method", method))
+	}
+	if remoteIP, ok := ctx.Value("remote_ip").(string); ok {
+		zapFields = append(zapFields, zap.String("remote_ip", remoteIP))
+	}
 
 	for key, value := range metaData {
 		zapFields = append(zapFields, zap.Any(key, value))
