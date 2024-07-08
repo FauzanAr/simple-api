@@ -12,10 +12,14 @@ func (nh *NamespaceHandler) NamespaceRoutes(router *gin.RouterGroup) {
 	adminRoutes := router.Group("")
 	adminRoutes.Use(middleware.GinAuthAdminMiddleware(nh.log))
 
-	userRoutes.POST("/v1/namespaces", nh.CreateNamespace)
+	multiRoleRoutes := router.Group("")
+	multiRoleRoutes.Use(middleware.GinMultiroleMiddleware(nh.log))
 
+	userRoutes.POST("/v1/namespaces", nh.CreateNamespace)
 	
 	adminRoutes.GET("/v1/namespaces", nh.GetAllNamespaces)
 	adminRoutes.DELETE("/v1/namespaces/:id", nh.DeleteNamespace)
 	adminRoutes.GET("/v1/namespaces/:id/status", nh.GetNameSpaceStatus)
+
+	multiRoleRoutes.GET("/v1/namespaces/:id", nh.GetDetailNamespace)
 }

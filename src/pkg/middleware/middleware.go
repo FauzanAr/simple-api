@@ -54,6 +54,7 @@ func GinAuthMiddleware(log logger.Logger) gin.HandlerFunc {
 		}
 
 		ctx := context.WithValue(c.Request.Context(), "user", claims)
+		ctx = context.WithValue(ctx, "role", "USER")
 		c.Request = c.Request.WithContext(ctx)
 		c.Next()
 	}
@@ -77,7 +78,42 @@ func GinAuthAdminMiddleware(log logger.Logger) gin.HandlerFunc {
 		}
 
 		ctx := context.WithValue(c.Request.Context(), "user", claims)
+		ctx = context.WithValue(ctx, "role", "ADMIN")
 		c.Request = c.Request.WithContext(ctx)
 		c.Next()
+	}
+}
+
+func GinMultiroleMiddleware(log logger.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			wrapper.SendErrorResponse(c, wrapper.UnauthorizedError("auth header missing"), nil, http.StatusUnauthorized)
+			c.Abort()
+			return
+		}
+
+		tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
+		claimsUser, err := helper.VerifyToken(c.Request.Context(), tokenString, "USER")
+		if err == nil {
+			ctx := context.WithValue(c.Request.Context(), "user", claimsUser)
+			ctx = context.WithValue(ctx, "role", "USER")
+			c.Request = c.Request.WithContext(ctx)
+			c.Next()
+			return
+		}
+
+		claimsAdmin, err := helper.VerifyToken(c.Request.Context(), tokenString, "ADMIN")
+		if err == nil {
+			ctx := context.WithValue(c.Request.Context(), "user", claimsAdmin)
+			ctx = context.WithValue(ctx, "role", "ADMIN")
+			c.Request = c.Request.WithContext(ctx)
+			c.Next()
+			return
+		}
+
+		wrapper.SendErrorResponse(c, wrapper.UnauthorizedError("invalid token"), nil, http.StatusUnauthorized)
+		c.Abort()
+		return
 	}
 }

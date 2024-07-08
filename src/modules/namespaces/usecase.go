@@ -7,8 +7,9 @@ import (
 )
 
 type Usecase interface {
-	CreateNamespace(context.Context, namespacemodel.NamespaceCreateRequest) (error)
-	DeleteNamespace(context.Context, namespacemodel.NamespaceDeleteRequest) (error)
-	GetAllNamespaces(context.Context) (namespacemodel.NamespaceGetAllResponse,error)
+	CreateNamespace(context.Context, namespacemodel.NamespaceCreateRequest) error
+	DeleteNamespace(context.Context, namespacemodel.NamespaceDeleteRequest) error
+	GetAllNamespaces(context.Context) (namespacemodel.NamespaceGetAllResponse, error)
 	GetStatusNamespace(context.Context, namespacemodel.NamespaceGetStatusRequest) (namespacemodel.NamespaceGetStatusResponse, error)
+	GetDetailNamespace(context.Context, namespacemodel.NamespaceGetDetailRequest) (namespacemodel.NamespaceGetDetailResponse, error)
 }

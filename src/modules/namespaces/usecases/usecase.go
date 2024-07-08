@@ -7,6 +7,7 @@ import (
 	namespaceentity "simple-api.com/m/src/modules/namespaces/entities"
 	namespacemodel "simple-api.com/m/src/modules/namespaces/models"
 	"simple-api.com/m/src/pkg/logger"
+	"simple-api.com/m/src/pkg/wrapper"
 )
 
 type NamespaceUsecase struct {
@@ -67,6 +68,26 @@ func (n NamespaceUsecase) GetStatusNamespace(ctx context.Context, payload namesp
 
 	res.Id = namespace.NamespaceID
 	res.Status = namespace.Status
+
+	return res, nil
+}
+
+func (n NamespaceUsecase) GetDetailNamespace(ctx context.Context, payload namespacemodel.NamespaceGetDetailRequest) (namespacemodel.NamespaceGetDetailResponse, error) {
+	var res namespacemodel.NamespaceGetDetailResponse
+	if payload.Role != "ADMIN" && payload.Role != "USER" {
+		return res, wrapper.UnauthorizedError("Only user and admin can view this namespace")
+	}
+
+	namespace, err := n.nr.GetNamespaceById(ctx, payload.Id)
+	if err != nil {
+		return res, err
+	}
+
+	if payload.Role == "USER" && namespace.UserID != payload.UserId {
+		return res, wrapper.UnauthorizedError("Only admin can view this namespace")
+	}
+
+	res.Namespace = namespace
 
 	return res, nil
 }
