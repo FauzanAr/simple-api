@@ -74,6 +74,10 @@ func (u UserUsecase) GetUserDetail(ctx context.Context, payload usermodel.UserDe
 		}
 	}
 
+	if (userentity.User{}) == user {
+		return res, wrapper.NotFoundError("No user found!")
+	}
+
 	res.UserId = int64(user.UserID)
 	res.Username = user.Username
 	res.Status = user.Status
@@ -86,9 +90,25 @@ func (u UserUsecase) GetUserDetail(ctx context.Context, payload usermodel.UserDe
 
 func (u UserUsecase) UpdateUser(ctx context.Context, payload usermodel.UserUpdateRequest) (usermodel.UserUpdateResponse, error) {
 	var res usermodel.UserUpdateResponse
-	user, err := u.ur.GetUserByUsername(ctx, payload.OriginalUsername)
-	if err != nil {
-		return res, err
+	var user userentity.User
+	var err error
+
+	if payload.OriginalUsername != "" {
+		user, err = u.ur.GetUserByUsername(ctx, payload.Username)
+		if err != nil {
+			return res, err
+		}
+	}
+
+	if payload.Id != 0 {
+		user, err = u.ur.GetUserById(ctx, payload.Id)
+		if err != nil {
+			return res, err
+		}
+	}
+
+	if (userentity.User{}) == user {
+		return res, wrapper.NotFoundError("No user found!")
 	}
 
 	user.Username = payload.Username

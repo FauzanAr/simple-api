@@ -6,7 +6,8 @@ type UserUpdateRequest struct {
 	Username         string `json:"username" validate:"required"`
 	Status           string `json:"status" validate:"required"`
 	Email            string `json:"email" validate:"required"`
-	OriginalUsername string
+	OriginalUsername string `omitempty`
+	Id               int    `omitempty`
 }
 
 type UserUpdateResponse struct {

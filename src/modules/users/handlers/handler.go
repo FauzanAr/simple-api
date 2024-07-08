@@ -141,3 +141,30 @@ func (uh *UserHandler) GetUserDetailAdmin(c *gin.Context) {
 
 	wrapper.SendSuccessResponse(c, "Success", result, http.StatusOK)
 }
+
+func (uh *UserHandler) UpdateUserByAdmin(c *gin.Context) {
+	var request usermodel.UserUpdateRequest
+	ctx := c.Request.Context()
+
+	userId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		wrapper.SendErrorResponse(c, wrapper.BadRequestError("Invalid userId"), nil, http.StatusBadRequest)
+		return
+	}
+
+	request.Id = userId
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		uh.log.Error(ctx, "Error while binding the request", err, nil)
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	result, err := uh.us.UpdateUser(ctx, request)
+	if err != nil {
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	wrapper.SendSuccessResponse(c, "Success", result, http.StatusOK)
+}
