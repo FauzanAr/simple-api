@@ -27,6 +27,7 @@ type MySql struct {
 
 type Jwt struct {
 	SecretKey           string `env:"JWT_SECRET_KEY,required"`
+	AdminSecretKey		string `env:"JWT_ADMIN_SECRET_KEY,required"`
 	AccessTokenExpired  int    `env:"JWT_ACCESS_TOKEN_EXPIRED_HOURS,required"`
 }
 

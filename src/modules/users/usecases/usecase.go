@@ -44,7 +44,7 @@ func (u UserUsecase) Login(ctx context.Context, payload usermodel.UserLoginReque
 		Username: user.Username,
 		Email:    user.Email,
 		Status:   user.Status,
-	})
+	}, "USER")
 
 	if err != nil {
 		return res, wrapper.BadRequestError("Error while generating token!")
@@ -98,7 +98,7 @@ func (u UserUsecase) UpdateUser(ctx context.Context, payload usermodel.UserUpdat
 	return res, nil
 }
 
-func (u UserUsecase) RegisterUser(ctx context.Context, payload usermodel.UserRegisterRequest) (error) {
+func (u UserUsecase) RegisterUser(ctx context.Context, payload usermodel.UserRegisterRequest) error {
 	var user userentity.User
 
 	hashedPassword, err := helper.Hash(payload.PasswordHash)

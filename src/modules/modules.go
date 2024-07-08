@@ -5,6 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	adminhandler "simple-api.com/m/src/modules/admins/handlers"
+	adminrepository "simple-api.com/m/src/modules/admins/repositories"
+	adminusecase "simple-api.com/m/src/modules/admins/usecases"
 	userhandler "simple-api.com/m/src/modules/users/handlers"
 	userrepository "simple-api.com/m/src/modules/users/repositories"
 	userusecase "simple-api.com/m/src/modules/users/usecases"
@@ -30,6 +33,7 @@ func NewModules(ctx context.Context, router *gin.Engine, log logger.Logger, db *
 }
 
 func (m *Modules) Init() error {
+	m.InitAdmins()
 	m.InitUsers()
 	return nil
 }
@@ -41,5 +45,15 @@ func (m *Modules) InitUsers() error {
 
 	group := m.router.Group("/api")
 	handlers.UserRoutes(group)
+	return nil
+}
+
+func (m *Modules) InitAdmins() error {
+	repository := adminrepository.NewAdminRepository(m.log, m.db)
+	usecase := adminusecase.NewAdminUsecase(m.log, repository)
+	handlers := adminhandler.NewAdminHandlers(m.log, usecase)
+
+	group := m.router.Group("/api")
+	handlers.AdminRoutes(group)
 	return nil
 }

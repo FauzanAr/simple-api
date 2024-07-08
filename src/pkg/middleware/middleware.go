@@ -46,7 +46,30 @@ func GinAuthMiddleware(log logger.Logger) gin.HandlerFunc {
 		}
 
 		tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
-		claims, err := helper.VerifyToken(c.Request.Context(), tokenString)
+		claims, err := helper.VerifyToken(c.Request.Context(), tokenString, "USER")
+		if err != nil {
+			wrapper.SendErrorResponse(c, wrapper.UnauthorizedError("invalid token"), nil, http.StatusUnauthorized)
+			c.Abort()
+			return
+		}
+
+		ctx := context.WithValue(c.Request.Context(), "user", claims)
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
+	}
+}
+
+func GinAuthAdminMiddleware(log logger.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			wrapper.SendErrorResponse(c, wrapper.UnauthorizedError("auth header missing"), nil, http.StatusUnauthorized)
+			c.Abort()
+			return
+		}
+
+		tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
+		claims, err := helper.VerifyToken(c.Request.Context(), tokenString, "ADMIN")
 		if err != nil {
 			wrapper.SendErrorResponse(c, wrapper.UnauthorizedError("invalid token"), nil, http.StatusUnauthorized)
 			c.Abort()
