@@ -14,6 +14,7 @@ import (
 	"simple-api.com/m/src/pkg/databases/mysql"
 	"simple-api.com/m/src/pkg/logger"
 	"simple-api.com/m/src/pkg/middleware"
+	"simple-api.com/m/src/pkg/validator"
 	"simple-api.com/m/src/pkg/wrapper"
 )
 
@@ -30,6 +31,8 @@ func main() {
 	server := gin.New()
 	server.Use(gin.Recovery())
 	server.Use(middleware.GinRequestTrace(log))
+
+	validator.InitCustomValidator()
 
 	connection := mysql.NewMysql(ctx, conf.Mysql, log)
 	db, err := connection.Connect()
