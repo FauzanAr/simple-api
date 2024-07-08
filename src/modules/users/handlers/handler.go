@@ -2,6 +2,7 @@ package userhandler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"simple-api.com/m/src/modules/users"
@@ -112,6 +113,27 @@ func (uh *UserHandler) Register(c *gin.Context) {
 func (uh *UserHandler) GetAllUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	result, err := uh.us.GetAllUserDetail(ctx)
+	if err != nil {
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	wrapper.SendSuccessResponse(c, "Success", result, http.StatusOK)
+}
+
+func (uh *UserHandler) GetUserDetailAdmin(c *gin.Context) {
+	var req usermodel.UserDetailRequest
+	ctx := c.Request.Context()
+
+	userId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		wrapper.SendErrorResponse(c, wrapper.BadRequestError("Invalid userId"), nil, http.StatusBadRequest)
+		return
+	}
+
+	req.Id = userId
+
+	result, err := uh.us.GetUserDetail(ctx, req)
 	if err != nil {
 		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
 		return

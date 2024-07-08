@@ -57,9 +57,21 @@ func (u UserUsecase) Login(ctx context.Context, payload usermodel.UserLoginReque
 
 func (u UserUsecase) GetUserDetail(ctx context.Context, payload usermodel.UserDetailRequest) (usermodel.UserDetailResponse, error) {
 	var res usermodel.UserDetailResponse
-	user, err := u.ur.GetUserByUsername(ctx, payload.Username)
-	if err != nil {
-		return res, err
+	var user userentity.User
+	var err error
+
+	if payload.Username != "" {
+		user, err = u.ur.GetUserByUsername(ctx, payload.Username)
+		if err != nil {
+			return res, err
+		}
+	}
+
+	if payload.Id != 0 {
+		user, err = u.ur.GetUserById(ctx, payload.Id)
+		if err != nil {
+			return res, err
+		}
 	}
 
 	res.UserId = int64(user.UserID)

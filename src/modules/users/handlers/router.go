@@ -22,4 +22,5 @@ func (uh *UserHandler) UserRoutes(router *gin.RouterGroup) {
 
 	adminRoutes.Use(middleware.GinAuthAdminMiddleware(uh.log))
 	adminRoutes.GET("/v1/users/", uh.GetAllUser)
+	adminRoutes.GET("/v1/users/:id", uh.GetUserDetailAdmin)
 }

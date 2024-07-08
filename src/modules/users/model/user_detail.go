@@ -3,7 +3,8 @@ package usermodel
 import "time"
 
 type UserDetailRequest struct {
-	Username string
+	Username string `omitempty`
+	Id       int    `omitempty`
 }
 
 type UserDetailResponse struct {
