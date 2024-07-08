@@ -6,8 +6,9 @@ import (
 )
 
 func (ah *AdminHandler) AdminRoutes(router *gin.RouterGroup) {
+	router.POST("/v1/admin", ah.Login)
+
 	protectedRoutes := router.Group("")
 	
 	protectedRoutes.Use(middleware.GinAuthAdminMiddleware(ah.log))
-	protectedRoutes.POST("/v1/admin", ah.Login)
 }

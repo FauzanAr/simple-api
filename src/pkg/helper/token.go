@@ -22,6 +22,7 @@ type Claims struct {
 	Username string `json:"username,omitempty"`
 	Email    string `json:"email,omitempty"`
 	Status   string `json:"status,omitempty"`
+	Role     string `json:"role,omitempty"`
 }
 
 type AccessClaims struct {
