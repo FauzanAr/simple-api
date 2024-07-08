@@ -25,6 +25,7 @@ func GinRequestTrace(log logger.Logger) gin.HandlerFunc {
 		c.Request = c.Request.WithContext(ctx)
 
 		log.Info(ctx, "Request started", nil)
+		c.Header("X-Trace-ID", traceID)
 
 		c.Next()
 

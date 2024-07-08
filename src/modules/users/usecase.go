@@ -9,4 +9,5 @@ import (
 type Usecase interface {
 	Login(context.Context, usermodel.UserLoginRequest) (usermodel.UserLoginResponse, error)
 	GetUserDetail(context.Context, usermodel.UserDetailRequest) (usermodel.UserDetailResponse, error)
+	UpdateUser(context.Context, usermodel.UserUpdateRequest) (usermodel.UserUpdateResponse, error)
 }

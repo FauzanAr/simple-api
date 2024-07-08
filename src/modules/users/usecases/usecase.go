@@ -70,3 +70,29 @@ func (u UserUsecase) GetUserDetail(ctx context.Context, payload usermodel.UserDe
 
 	return res, nil
 }
+
+func (u UserUsecase) UpdateUser(ctx context.Context, payload usermodel.UserUpdateRequest) (usermodel.UserUpdateResponse, error) {
+	var res usermodel.UserUpdateResponse
+	user, err := u.ur.GetUserByUsername(ctx, payload.OriginalUsername)
+	if err != nil {
+		return res, err
+	}
+
+	user.Username = payload.Username
+	user.Status = payload.Status
+	user.Email = payload.Email
+
+	err = u.ur.UpdateUser(ctx, user)
+	if err != nil {
+		return res, err
+	}
+
+	res.UserId = int64(user.UserID)
+	res.Username = user.Username
+	res.Email = user.Email
+	res.Status = user.Status
+	res.CreatedAt = user.CreatedAt
+	res.UpdatedAt = user.UpdatedAt
+
+	return res, nil
+}

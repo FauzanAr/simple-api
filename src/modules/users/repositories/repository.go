@@ -2,6 +2,7 @@ package userrepository
 
 import (
 	"context"
+	"strings"
 
 	"simple-api.com/m/src/modules/users"
 	userentity "simple-api.com/m/src/modules/users/entities"
@@ -35,4 +36,19 @@ func (u UserRepository) GetUserByUsername(ctx context.Context, username string) 
 	}
 
 	return result, nil
+}
+
+func (u UserRepository) UpdateUser(ctx context.Context, user userentity.User) (error) {
+	err := u.db.GetDatabase().Where("UserId = ?", user.UserID).Save(&user).Error
+	if err != nil {
+		u.log.Error(ctx, err.Error(), err, nil)
+
+		if strings.Contains(err.Error(), "Duplicate entry") {
+			return wrapper.BadRequestError("Duplicate entry for email or username")
+		}
+
+		return wrapper.InternalServerError("Error while saving data!")
+	}
+
+	return nil
 }

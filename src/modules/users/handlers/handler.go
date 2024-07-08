@@ -43,7 +43,30 @@ func (uh *UserHandler) Login(c *gin.Context) {
 }
 
 func (uh *UserHandler) UpdateUser(c *gin.Context) {
+	var request usermodel.UserUpdateRequest
+	ctx := c.Request.Context()
+	user, ok := ctx.Value("user").(*helper.AccessClaims)
+	if !ok {
+		errMsg := wrapper.InternalServerError("Error while converting request")
+		wrapper.SendErrorResponse(c, errMsg, nil, http.StatusInternalServerError)
+		return
+	}
 
+	request.OriginalUsername = user.Username
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		uh.log.Error(ctx, "Error while binding the request", err, nil)
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	result, err := uh.us.UpdateUser(ctx, request)
+	if err != nil {
+		wrapper.SendErrorResponse(c, err, nil, http.StatusBadRequest)
+		return
+	}
+
+	wrapper.SendSuccessResponse(c, "Success", result, http.StatusOK)
 }
 
 func (uh *UserHandler) GetUserDetail(c *gin.Context) {
