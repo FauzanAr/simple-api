@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"simple-api.com/m/src/config"
 	"simple-api.com/m/src/modules"
+	"simple-api.com/m/src/pkg/databases/mysql"
 	"simple-api.com/m/src/pkg/logger"
 	"simple-api.com/m/src/pkg/middleware"
 	"simple-api.com/m/src/pkg/wrapper"
@@ -30,6 +31,11 @@ func main() {
 	server.Use(gin.Recovery())
 	server.Use(middleware.GinRequestTrace(log))
 
+	connection := mysql.NewMysql(ctx, conf.Mysql, log)
+	db, err := connection.Connect()
+	if err != nil {
+		panic("Database can't connect")
+	}
 
 	httpServer := &http.Server{
 		Addr:    ":" + conf.AppPort,
@@ -58,7 +64,7 @@ func main() {
 		wrapper.SendSuccessResponse(c, "Server Up and Running", nil, http.StatusOK)
 	})
 
-	modules.NewModules(ctx, server, log).Init()
+	modules.NewModules(ctx, server, log, db).Init()
 
 	if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Error(ctx, "Unable to start server", err, nil)
