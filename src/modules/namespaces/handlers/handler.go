@@ -35,7 +35,7 @@ func (nh *NamespaceHandler) CreateNamespace(c *gin.Context) {
 			wrapper.SendErrorResponse(c, errMsg, nil, http.StatusInternalServerError)
 			return
 		}
-	
+
 		request.UserID = int(user.Claims.Id)
 	}
 
