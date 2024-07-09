@@ -7,7 +7,6 @@ import (
 
 func (uh *UserHandler) UserRoutes(router *gin.RouterGroup) {
 	router.POST("/v1/login", uh.Login)
-	router.POST("/v1/register", uh.Register)
 
 	// Protected
 	protectedRoutes := router.Group("")
@@ -20,8 +19,8 @@ func (uh *UserHandler) UserRoutes(router *gin.RouterGroup) {
 	// Admin
 	adminRoutes := router.Group("")
 
-	adminRoutes.Use(middleware.GinAuthAdminMiddleware(uh.log))
-	adminRoutes.GET("/v1/users/", uh.GetAllUser)
-	adminRoutes.GET("/v1/users/:id", uh.GetUserDetailAdmin)
-	adminRoutes.PUT("/v1/users/:id", uh.UpdateUserByAdmin)
+	adminRoutes.POST("/v1/register", middleware.GinAuthAdminMiddleware(uh.log, []string{"admin", "agent"}), uh.Register)
+	adminRoutes.GET("/v1/users/", middleware.GinAuthAdminMiddleware(uh.log, []string{"admin"}), uh.GetAllUser)
+	adminRoutes.GET("/v1/users/:id", middleware.GinAuthAdminMiddleware(uh.log, []string{"admin", "agent"}), uh.GetUserDetailAdmin)
+	adminRoutes.PUT("/v1/users/:id", middleware.GinAuthAdminMiddleware(uh.log, []string{"admin", "agent"}), uh.UpdateUserByAdmin)
 }

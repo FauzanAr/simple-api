@@ -60,7 +60,7 @@ func GinAuthMiddleware(log logger.Logger) gin.HandlerFunc {
 	}
 }
 
-func GinAuthAdminMiddleware(log logger.Logger) gin.HandlerFunc {
+func GinAuthAdminMiddleware(log logger.Logger, allowedRoles []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -77,14 +77,23 @@ func GinAuthAdminMiddleware(log logger.Logger) gin.HandlerFunc {
 			return
 		}
 
-		ctx := context.WithValue(c.Request.Context(), "user", claims)
-		ctx = context.WithValue(ctx, "role", "ADMIN")
-		c.Request = c.Request.WithContext(ctx)
-		c.Next()
+		role := claims.Role
+		for _, allowedRole := range allowedRoles {
+			if role == allowedRole {
+				ctx := context.WithValue(c.Request.Context(), "user", claims)
+				ctx = context.WithValue(ctx, "role", "ADMIN")
+				c.Request = c.Request.WithContext(ctx)
+				c.Next()
+				return
+			}
+		}
+
+		wrapper.SendErrorResponse(c, wrapper.UnauthorizedError("forbidden access"), nil, http.StatusForbidden)
+		c.Abort()
 	}
 }
 
-func GinMultiroleMiddleware(log logger.Logger) gin.HandlerFunc {
+func GinMultiroleMiddleware(log logger.Logger, allowedRolesForAdmin []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -105,10 +114,19 @@ func GinMultiroleMiddleware(log logger.Logger) gin.HandlerFunc {
 
 		claimsAdmin, err := helper.VerifyToken(c.Request.Context(), tokenString, "ADMIN")
 		if err == nil {
-			ctx := context.WithValue(c.Request.Context(), "user", claimsAdmin)
-			ctx = context.WithValue(ctx, "role", "ADMIN")
-			c.Request = c.Request.WithContext(ctx)
-			c.Next()
+			role := claimsAdmin.Role
+			for _, allowedRole := range allowedRolesForAdmin {
+				if role == allowedRole {
+					ctx := context.WithValue(c.Request.Context(), "user", claimsAdmin)
+					ctx = context.WithValue(ctx, "role", "ADMIN")
+					c.Request = c.Request.WithContext(ctx)
+					c.Next()
+					return
+				}
+			}
+
+			wrapper.SendErrorResponse(c, wrapper.UnauthorizedError("forbidden access"), nil, http.StatusForbidden)
+			c.Abort()
 			return
 		}
 

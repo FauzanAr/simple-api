@@ -27,14 +27,17 @@ func NewNamespaceHandler(log logger.Logger, nu namespaces.Usecase) *NamespaceHan
 func (nh *NamespaceHandler) CreateNamespace(c *gin.Context) {
 	var request namespacemodel.NamespaceCreateRequest
 	ctx := c.Request.Context()
-	user, ok := ctx.Value("user").(*helper.AccessClaims)
-	if !ok {
-		errMsg := wrapper.InternalServerError("Error while converting request")
-		wrapper.SendErrorResponse(c, errMsg, nil, http.StatusInternalServerError)
-		return
+	role := c.Request.Context().Value("role").(string)
+	if role == "USER" {
+		user, ok := ctx.Value("user").(*helper.AccessClaims)
+		if !ok {
+			errMsg := wrapper.InternalServerError("Error while converting request")
+			wrapper.SendErrorResponse(c, errMsg, nil, http.StatusInternalServerError)
+			return
+		}
+	
+		request.UserID = int(user.Claims.Id)
 	}
-
-	request.UserID = int(user.Claims.Id)
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		nh.log.Error(ctx, "Error while binding the request", err, nil)
